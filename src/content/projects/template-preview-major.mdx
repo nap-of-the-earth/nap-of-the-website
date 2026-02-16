@@ -1,0 +1,91 @@
+---
+title: "Template Preview — Major"
+description: "Preview of the major project content template. Full content page with architecture, code showcase, and gallery."
+category: "Software"
+context: "R&D"
+icon: "△"
+images: []
+tags: ["Template", "Major", "Preview"]
+date: 2026-01-01
+featured: false
+order: 98
+---
+
+import YouTubeEmbed from "@components/astro/YouTubeEmbed.astro";
+import ImageGallery from "@components/react/ImageGallery";
+
+## Overview
+
+This is where you write 2-3 paragraphs about the project. Lead with what the project **is** and what problem it solves. Then explain what makes it unique or interesting. Finally, provide context — was this academic, professional, collaborative?
+
+The overview is the hook. Keep it compelling but honest. Avoid generic filler like "this project was a great learning experience." Instead, be specific: what decisions did you make, what tradeoffs did you navigate, what did you build that didn't exist before?
+
+<YouTubeEmbed id="dQw4w9WgXcQ" title="Project Demo (replace with your video)" />
+
+## Architecture
+
+Describe the high-level system design here. Use an ASCII diagram to visualize the major components and their relationships.
+
+```
+┌─────────────────────────────────────────┐
+│            Your Top Layer               │
+├──────────┬──────────┬──────────┬────────┤
+│ Module A │ Module B │ Module C │ Mod D  │
+├──────────┴──────────┴──────────┴────────┤
+│              Core / Shared              │
+├─────────────────────────────────────────┤
+│              Platform Layer             │
+└─────────────────────────────────────────┘
+```
+
+| Module | Description |
+|--------|-------------|
+| Module A | Brief description of what this module does |
+| Module B | Brief description of what this module does |
+| Core | Shared utilities, math, data structures |
+
+## Highlights
+
+### Highlight 1 Title
+
+Describe the most impressive or technically interesting aspect of the project. What problem did it solve? What was your approach? Why does it matter?
+
+### Highlight 2 Title
+
+Another key feature or technical decision. Focus on things that demonstrate your skills — algorithms, architecture choices, performance optimizations, creative solutions.
+
+## Code
+
+Brief context explaining what this code does and why it's interesting:
+
+```cpp
+// Replace with an actual code snippet from your project.
+// Pick something that's both readable and impressive.
+void Example::DoSomethingInteresting() {
+    auto result = ProcessData(input);
+    if (result.has_value()) {
+        m_cache.Store(result.value());
+        NotifyObservers(Event::DataProcessed);
+    }
+}
+```
+
+## Gallery
+
+<ImageGallery
+  client:visible
+  images={[
+    { src: "/images/placeholder-1.svg", alt: "Screenshot 1 — describe what the viewer sees" },
+    { src: "/images/placeholder-2.svg", alt: "Screenshot 2 — describe what the viewer sees" },
+    { src: "/images/placeholder-3.svg", alt: "Screenshot 3 — describe what the viewer sees" },
+  ]}
+/>
+
+## Technical Specifications
+
+| Component | Technology |
+|-----------|------------|
+| Language  | C++20 / TypeScript / C# |
+| Rendering | DirectX 11 / OpenGL / Vulkan |
+| Build     | CMake / npm / dotnet |
+| Platform  | Windows / Web / Cross-platform |

@@ -1,0 +1,16 @@
+---
+/**
+ * Section — Clean wrapper replacing GridSection.
+ * No grid guides or crosses — just max-width + padding.
+ */
+interface Props {
+  class?: string;
+  id?: string;
+}
+
+const { class: className, id } = Astro.props;
+---
+
+<section id={id} class:list={["section-wrapper", className]}>
+  <slot />
+</section>

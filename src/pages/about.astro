@@ -1,0 +1,150 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Section from "@components/astro/Section.astro";
+import { skills } from "@data/skills";
+import { milestones } from "@data/education";
+import { SOCIAL_LINKS } from "@lib/constants";
+---
+
+<BaseLayout title="About" description="nap of the earth — A cross-disciplinary studio offering architecture, graphic design, web development, software engineering, and game development services.">
+  {/* Header */}
+  <Section class="pt-32 pb-16">
+    <div class="text-center">
+      <p class="font-mono text-[0.7rem] tracking-[0.15em] uppercase text-teal mb-4">
+        About
+      </p>
+      <h1 class="text-[2.5rem] font-bold tracking-tight mb-6">
+        nap of the earth
+      </h1>
+      <p class="text-lg font-normal leading-relaxed text-text-secondary max-w-[600px] mx-auto">
+        A cross-disciplinary studio bridging architecture, design, and technology.
+        We bring ideas to life across every medium.
+      </p>
+      <a
+        href="/company-profile.pdf"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-1.5 mt-5 font-mono text-[0.7rem] tracking-[0.1em] uppercase text-text-tertiary hover:text-teal transition-colors no-underline"
+      >
+        Company Profile PDF
+        <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+      </a>
+    </div>
+  </Section>
+
+  {/* Story */}
+  <Section class="py-16">
+    <div class="bg-bg-card border border-border rounded-2xl p-10">
+      <h2 class="text-xl font-semibold tracking-tight mb-4">Our Story</h2>
+      <div class="space-y-4 text-sm font-normal leading-relaxed text-text-secondary">
+        <p>
+          nap of the earth was founded on a simple belief: the best work happens
+          when disciplines collide. Architecture taught us to think in systems —
+          structure, space, light, and human experience. Software taught us to
+          ship those systems at scale.
+        </p>
+        <p>
+          We're a studio that doesn't fit neatly into one box. Our team brings
+          expertise across architecture, graphic design, web development, software
+          engineering, and game development. This cross-disciplinary DNA means every
+          project benefits from perspectives that most studios simply don't have.
+        </p>
+        <p>
+          Whether it's a parametric building facade, a brand identity system, a
+          full-stack web application, or an interactive game experience — we approach
+          every challenge with the same rigor: understand the problem deeply, design
+          with intention, and build with precision.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  {/* Milestones */}
+  <Section class="py-16">
+    <h2 class="text-xl font-semibold tracking-tight mb-6">Milestones</h2>
+    <div class="flex flex-col gap-5">
+      {milestones.map((m) => (
+        <div class="bg-bg-card border border-border rounded-2xl p-8 hover:border-border-hover transition-colors">
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-2">
+            <h3 class="text-base font-medium">
+              {m.title} — {m.field}
+            </h3>
+            {m.period && (
+              <span class="font-mono text-[0.7rem] text-text-tertiary">
+                {m.period}
+              </span>
+            )}
+          </div>
+          <p class="text-sm text-teal mb-2">{m.context}</p>
+          <p class="text-sm font-normal text-text-secondary">
+            {m.description}
+          </p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  {/* Services */}
+  <Section class="py-16">
+    <h2 class="text-xl font-semibold tracking-tight mb-6">Services & Capabilities</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {skills.map((skill) => (
+        <div class="bg-bg-card border border-border rounded-2xl p-8 hover:border-teal-dim transition-colors relative overflow-hidden group">
+          {/* Top gradient bar on hover */}
+          <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-teal to-cyan opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-2xl">{skill.icon}</span>
+            <h3 class="text-base font-semibold">{skill.title}</h3>
+          </div>
+          <p class="text-sm font-normal text-text-secondary mb-4">
+            {skill.description}
+          </p>
+          <div class="flex gap-1.5 flex-wrap">
+            {skill.tools.map((tool) => (
+              <span class="font-mono text-[0.6rem] text-text-tertiary bg-[rgba(255,255,255,0.04)] border border-border px-2 py-0.5 rounded-md">
+                {tool}
+              </span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  {/* Contact */}
+  <Section class="py-16">
+    <div id="contact" class="bg-bg-card border border-border rounded-2xl p-10 text-center relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-teal to-cyan"></div>
+      <h2 class="text-xl font-semibold tracking-tight mb-4">Start a Project</h2>
+      <p class="text-sm font-normal text-text-secondary mb-8 max-w-[400px] mx-auto">
+        Have a project in mind? We'd love to hear about it.
+        Let's build something remarkable together.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a
+          href={`mailto:${SOCIAL_LINKS.email}`}
+          class="btn-glow"
+        >
+          Get in Touch
+        </a>
+        <a
+          href={SOCIAL_LINKS.linkedin}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-outline"
+        >
+          LinkedIn
+        </a>
+        <a
+          href={SOCIAL_LINKS.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn-outline"
+        >
+          GitHub
+        </a>
+      </div>
+    </div>
+  </Section>
+</BaseLayout>

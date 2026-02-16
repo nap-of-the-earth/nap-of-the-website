@@ -1,0 +1,177 @@
+---
+title: "Daemon Engine"
+description: "Daemon Engine is a C++20 game engine featuring real-time V8 JavaScript scripting with hot-reload capabilities, DirectX 11 rendering pipeline, multithreaded JobSystem for parallel processing, NetworkSubsystem for multiplayer experiences, resource management with caching, and integrated FMOD 3D audio system."
+category: "Game Dev"
+context: "R&D"
+icon: "△"
+tags: ["C++", "DirectX 11", "V8 JavaScript Engine", "FMOD"]
+date: 2024-06-15
+featured: true
+order: 1
+repoUrl: "https://github.com/example/daemon-engine"
+---
+
+import YouTubeEmbed from "@components/astro/YouTubeEmbed.astro";
+import ImageGallery from "@components/react/ImageGallery";
+
+## Overview
+
+Daemon Engine is a custom C++20 game engine built from scratch as part of the SMU Guildhall program. The engine is designed around a modular subsystem architecture — each major system (rendering, scripting, audio, networking, jobs) operates as an independent module that communicates through a central event bus.
+
+The defining feature is the **V8 JavaScript scripting layer**, which allows gameplay logic to be written in JavaScript and hot-reloaded at runtime without restarting the engine. This dramatically accelerates iteration speed during development.
+
+{/* Replace this video ID with your actual demo video */}
+<YouTubeEmbed id="ScMzIvxBSi4" title="Daemon Engine — Demo Reel" />
+
+## Architecture
+
+The engine follows a layered architecture with clear dependency boundaries:
+
+```
+┌─────────────────────────────────────────┐
+│              Game Layer (JS)            │
+├─────────────────────────────────────────┤
+│           Scripting (V8 Bridge)         │
+├──────────┬──────────┬──────────┬────────┤
+│ Renderer │  Audio   │ Network  │ Physics│
+│ (DX11)   │  (FMOD)  │  (UDP)   │        │
+├──────────┴──────────┴──────────┴────────┤
+│         Core (JobSystem, Events,        │
+│         Resources, Math, ECS)           │
+├─────────────────────────────────────────┤
+│            Platform (Win32)             │
+└─────────────────────────────────────────┘
+```
+
+### Core Subsystems
+
+- **JobSystem** — Lock-free work-stealing thread pool. Tasks are submitted as lambdas and distributed across worker threads. Supports job dependencies and continuations.
+- **ECS** — Archetype-based Entity Component System. Components are stored in contiguous memory for cache-friendly iteration.
+- **Resource Manager** — Async resource loading with reference counting and LRU cache eviction.
+- **Event Bus** — Type-erased publish/subscribe system for decoupled inter-subsystem communication.
+
+## Rendering Pipeline
+
+The DirectX 11 renderer implements a forward+ rendering pipeline with the following stages:
+
+1. **Depth Pre-Pass** — Early Z for occlusion culling
+2. **Light Culling** — Compute shader tiles lights into screen-space clusters
+3. **Forward Shading** — PBR materials with IBL (Image-Based Lighting)
+4. **Post-Processing** — Bloom, tone mapping (ACES), FXAA
+
+```cpp
+// Simplified render loop
+void Renderer::Frame() {
+    m_depthPass.Execute(m_context, m_scene);
+    m_lightCuller.Dispatch(m_context, m_scene.GetLights());
+    m_forwardPass.Execute(m_context, m_scene, m_lightCuller.GetTileBuffer());
+    m_postProcess.Execute(m_context, m_forwardPass.GetHDRTarget());
+    m_swapChain->Present(1, 0);
+}
+```
+
+## Gallery
+
+{/* Replace these placeholder paths with your actual screenshots */}
+<ImageGallery
+  client:load
+  images={[
+    { src: "/images/placeholder-1.svg", alt: "Daemon Engine — Editor viewport" },
+    { src: "/images/placeholder-2.svg", alt: "Daemon Engine — PBR material system" },
+    { src: "/images/placeholder-3.svg", alt: "Daemon Engine — Debug visualization" },
+    { src: "/images/placeholder-4.svg", alt: "Daemon Engine — JavaScript console" },
+    { src: "/images/placeholder-5.svg", alt: "Daemon Engine — Scene hierarchy" },
+    { src: "/images/placeholder-6.svg", alt: "Daemon Engine — Profiler overlay" },
+  ]}
+/>
+
+## V8 Scripting Integration
+
+The V8 JavaScript engine is embedded directly into the engine runtime. Game objects are exposed to JavaScript through a binding layer that maps C++ classes to JS prototypes:
+
+```cpp
+// Binding a C++ Transform component to JavaScript
+void ScriptSubsystem::BindTransform(v8::Isolate* isolate) {
+    v8::Local<v8::ObjectTemplate> tmpl = v8::ObjectTemplate::New(isolate);
+    tmpl->SetInternalFieldCount(1);
+
+    tmpl->SetAccessorProperty(
+        V8Str(isolate, "position"),
+        v8::FunctionTemplate::New(isolate, GetPosition),
+        v8::FunctionTemplate::New(isolate, SetPosition)
+    );
+
+    tmpl->Set(isolate, "translate",
+        v8::FunctionTemplate::New(isolate, Translate));
+    tmpl->Set(isolate, "rotate",
+        v8::FunctionTemplate::New(isolate, Rotate));
+}
+```
+
+On the JavaScript side, gameplay scripts look like this:
+
+```javascript
+// player_controller.js — hot-reloadable at runtime
+export default class PlayerController extends Component {
+  speed = 8.0;
+  jumpForce = 12.0;
+
+  update(dt) {
+    const input = Engine.input;
+    const vel = Vec3.zero();
+
+    if (input.isKeyDown("W")) vel.z -= this.speed;
+    if (input.isKeyDown("S")) vel.z += this.speed;
+    if (input.isKeyDown("A")) vel.x -= this.speed;
+    if (input.isKeyDown("D")) vel.x += this.speed;
+
+    this.entity.transform.translate(vel.scale(dt));
+
+    if (input.isKeyPressed("Space") && this.isGrounded()) {
+      this.entity.rigidbody.addImpulse(Vec3.up().scale(this.jumpForce));
+    }
+  }
+}
+```
+
+### Hot-Reload
+
+The file watcher monitors the `scripts/` directory. When a `.js` file changes, the engine:
+
+1. Compiles the new source in an isolated V8 context
+2. Validates the export signature matches the expected interface
+3. Swaps the script module reference on all entities using it
+4. Preserves serializable state across the reload
+
+Average reload time is **~12ms** for a typical gameplay script.
+
+## Audio System
+
+FMOD Studio integration provides 3D spatial audio with:
+
+- **Distance attenuation** with customizable rolloff curves
+- **Occlusion** via raycasts against the physics world
+- **Reverb zones** tied to trigger volumes in the ECS
+- **Real-time parameter control** from JavaScript scripts
+
+## Networking
+
+The NetworkSubsystem implements a client-authoritative model over UDP:
+
+- **Snapshot interpolation** for smooth remote entity movement
+- **Input prediction** with server reconciliation
+- **Delta compression** to minimize bandwidth
+- **Connection management** with heartbeat and timeout detection
+
+## Technical Specifications
+
+| Component | Technology |
+|---|---|
+| Language | C++20 (MSVC) |
+| Rendering | DirectX 11, HLSL 5.0 |
+| Scripting | V8 JavaScript Engine (v12.x) |
+| Audio | FMOD Studio 2.02 |
+| Build System | CMake 3.28+ |
+| Physics | Custom AABB + SAT |
+| Networking | WinSock2, UDP |
+| Platform | Windows 10/11 |

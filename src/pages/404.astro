@@ -1,0 +1,23 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Section from "@components/astro/Section.astro";
+---
+
+<BaseLayout title="404 — Not Found">
+  <Section class="min-h-screen flex flex-col items-center justify-center">
+    <div class="text-center">
+      <h1 class="font-mono text-[6rem] font-bold tracking-tighter gradient-text-teal mb-4">
+        404
+      </h1>
+      <p class="text-lg font-normal text-text-secondary mb-8">
+        This page doesn't exist. Yet.
+      </p>
+      <a
+        href="/"
+        class="btn-glow"
+      >
+        Back to Home
+      </a>
+    </div>
+  </Section>
+</BaseLayout>

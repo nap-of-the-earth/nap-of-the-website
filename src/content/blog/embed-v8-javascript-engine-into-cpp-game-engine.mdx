@@ -1,0 +1,228 @@
+---
+title: "Embedding V8 JavaScript Engine into a C++ Game Engine"
+description: "A deep dive into integrating Google's V8 JavaScript engine into a custom C++ game engine, enabling hot-reloadable gameplay scripting with near-native performance."
+category: "Engineering"
+pubDate: 2024-07-20
+tags: ["C++", "V8", "JavaScript", "Game Engine"]
+draft: false
+---
+
+## Why Embed a Scripting Language?
+
+Game engines separate the **engine layer** (rendering, physics, audio) from the **gameplay layer** (player movement, AI behavior, UI logic). The engine is written in C++ for performance. But gameplay code needs to iterate fast — waiting for a full C++ recompile every time you tweak a jump height is brutal.
+
+The solution: embed a scripting language. Gameplay developers write in a higher-level language that the engine interprets at runtime. Change a script, hit reload, see the result instantly.
+
+We chose **V8** — Google's JavaScript engine that powers Chrome and Node.js — for several reasons:
+
+- **Performance**: V8's JIT compiler produces machine code that approaches native C++ speed for compute-heavy logic
+- **Familiarity**: JavaScript is the most widely known programming language — low barrier for gameplay programmers
+- **Tooling**: Mature debugger protocol, source maps, and profiling tools
+- **Active maintenance**: Backed by Google, updated weekly
+
+## Build System Setup
+
+V8 is notoriously difficult to build. It uses Google's `gn` + `ninja` build system and has hundreds of build flags. Here's the approach that worked for our CMake-based engine:
+
+### Option 1: Build V8 from Source
+
+```bash
+# Fetch V8 source via depot_tools
+fetch v8
+cd v8
+
+# Generate build files for a static library
+gn gen out/release --args='
+  is_debug=false
+  is_component_build=false
+  v8_static_library=true
+  v8_monolithic=true
+  v8_use_external_startup_data=false
+  treat_warnings_as_errors=false
+  target_cpu="x64"
+'
+
+# Build
+ninja -C out/release v8_monolith
+```
+
+This produces a single `v8_monolith.lib` (~40MB) that you link into your engine.
+
+### Option 2: Use Pre-built Binaries
+
+For CI/CD pipelines, building V8 from source on every run is impractical. We publish pre-built binaries to an internal NuGet feed and consume them via CMake:
+
+```cmake
+find_package(V8 REQUIRED)
+
+target_link_libraries(DaemonEngine PRIVATE
+    V8::v8_monolith
+)
+
+target_include_directories(DaemonEngine PRIVATE
+    ${V8_INCLUDE_DIRS}
+)
+```
+
+## Initializing V8
+
+V8 requires explicit initialization before any JavaScript can execute. The engine's `ScriptSubsystem` handles this during startup:
+
+```cpp
+#include <v8.h>
+#include <libplatform/libplatform.h>
+
+class ScriptSubsystem : public ISubsystem {
+public:
+    void Initialize() override {
+        // Initialize V8 platform (thread pool for background compilation)
+        m_platform = v8::platform::NewDefaultPlatform();
+        v8::V8::InitializePlatform(m_platform.get());
+        v8::V8::Initialize();
+
+        // Create an isolate (an independent V8 VM instance)
+        v8::Isolate::CreateParams params;
+        params.array_buffer_allocator =
+            v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+        m_isolate = v8::Isolate::New(params);
+
+        // Create a persistent context with our global bindings
+        v8::Isolate::Scope isolateScope(m_isolate);
+        v8::HandleScope handleScope(m_isolate);
+
+        v8::Local<v8::ObjectTemplate> global = CreateGlobalTemplate();
+        v8::Local<v8::Context> context =
+            v8::Context::New(m_isolate, nullptr, global);
+        m_context.Reset(m_isolate, context);
+    }
+
+private:
+    std::unique_ptr<v8::Platform> m_platform;
+    v8::Isolate* m_isolate = nullptr;
+    v8::Global<v8::Context> m_context;
+};
+```
+
+Key concepts:
+- **Platform**: Manages V8's background threads (compilation, GC)
+- **Isolate**: An independent VM instance with its own heap. One isolate per thread.
+- **Context**: A sandboxed execution environment with its own global object
+
+## Binding C++ to JavaScript
+
+The core challenge is exposing engine functionality to scripts. V8 provides `FunctionTemplate` and `ObjectTemplate` for this:
+
+```cpp
+v8::Local<v8::ObjectTemplate> ScriptSubsystem::CreateGlobalTemplate() {
+    v8::EscapableHandleScope scope(m_isolate);
+    v8::Local<v8::ObjectTemplate> global = v8::ObjectTemplate::New(m_isolate);
+
+    // Bind Engine.log()
+    v8::Local<v8::ObjectTemplate> engine = v8::ObjectTemplate::New(m_isolate);
+    engine->Set(m_isolate, "log",
+        v8::FunctionTemplate::New(m_isolate, [](const v8::FunctionCallbackInfo<v8::Value>& args) {
+            v8::String::Utf8Value msg(args.GetIsolate(), args[0]);
+            Logger::Info("[JS] {}", *msg);
+        })
+    );
+
+    global->Set(m_isolate, "Engine", engine);
+    return scope.Escape(global);
+}
+```
+
+For game objects, we use a **wrapper pattern** that stores a C++ pointer inside the JS object:
+
+```cpp
+void BindTransformComponent(v8::Isolate* isolate,
+                             v8::Local<v8::ObjectTemplate>& global) {
+    v8::Local<v8::FunctionTemplate> ctor =
+        v8::FunctionTemplate::New(isolate);
+    ctor->SetClassName(V8Str(isolate, "Transform"));
+    ctor->InstanceTemplate()->SetInternalFieldCount(1);
+
+    // Property: position (get/set)
+    ctor->PrototypeTemplate()->SetAccessorProperty(
+        V8Str(isolate, "position"),
+        v8::FunctionTemplate::New(isolate, [](const v8::FunctionCallbackInfo<v8::Value>& args) {
+            auto* transform = UnwrapInternal<TransformComponent>(args.This());
+            auto pos = transform->GetWorldPosition();
+            // Return as {x, y, z} object
+            auto obj = v8::Object::New(args.GetIsolate());
+            obj->Set(/*...*/);
+            args.GetReturnValue().Set(obj);
+        }),
+        v8::FunctionTemplate::New(isolate, [](const v8::FunctionCallbackInfo<v8::Value>& args) {
+            auto* transform = UnwrapInternal<TransformComponent>(args.This());
+            auto obj = args[0].As<v8::Object>();
+            float x = obj->Get(/*...*/).As<v8::Number>()->Value();
+            float y = obj->Get(/*...*/).As<v8::Number>()->Value();
+            float z = obj->Get(/*...*/).As<v8::Number>()->Value();
+            transform->SetWorldPosition({x, y, z});
+        })
+    );
+}
+```
+
+## Hot-Reload Implementation
+
+This is the feature that makes scripting worthwhile. The file watcher monitors the `scripts/` directory and triggers a reload when any `.js` file changes:
+
+```cpp
+void ScriptSubsystem::OnFileChanged(const std::filesystem::path& path) {
+    auto it = m_loadedModules.find(path.string());
+    if (it == m_loadedModules.end()) return;
+
+    // Read the new source
+    std::string source = FileSystem::ReadText(path);
+
+    v8::Isolate::Scope isolateScope(m_isolate);
+    v8::HandleScope handleScope(m_isolate);
+    v8::Local<v8::Context> ctx = m_context.Get(m_isolate);
+    v8::Context::Scope contextScope(ctx);
+
+    // Compile in a TryCatch block to handle syntax errors gracefully
+    v8::TryCatch tryCatch(m_isolate);
+    v8::Local<v8::String> v8Source = V8Str(m_isolate, source);
+    v8::Local<v8::Script> script;
+
+    if (!v8::Script::Compile(ctx, v8Source).ToLocal(&script)) {
+        v8::String::Utf8Value error(m_isolate, tryCatch.Exception());
+        Logger::Error("[JS] Compile error in {}: {}", path.filename(), *error);
+        return; // Keep the old version running
+    }
+
+    // Execute the module to get the new class
+    v8::Local<v8::Value> result;
+    if (!script->Run(ctx).ToLocal(&result)) {
+        v8::String::Utf8Value error(m_isolate, tryCatch.Exception());
+        Logger::Error("[JS] Runtime error in {}: {}", path.filename(), *error);
+        return;
+    }
+
+    // Swap the module reference — all entities using this script
+    // will pick up the new version on the next frame
+    it->second.Reset(m_isolate, result.As<v8::Object>());
+
+    Logger::Info("[JS] Hot-reloaded: {}", path.filename());
+}
+```
+
+The key insight: **we don't destroy and recreate entities**. We only swap the script module reference. Entity state (position, health, inventory) is preserved across reloads because it lives in the ECS, not in the script.
+
+## Performance Considerations
+
+V8's JIT compiler is fast, but there are pitfalls:
+
+1. **Avoid crossing the C++/JS boundary in tight loops.** Each call has overhead (~50ns). Batch operations where possible.
+2. **Use typed arrays for bulk data.** Passing a `Float32Array` to C++ gives you a direct pointer to the backing store — zero copy.
+3. **Minimize GC pressure.** Pre-allocate objects, reuse vectors, avoid creating temporary objects every frame.
+4. **Profile with `--prof`.** V8 can emit profiling data that Chrome DevTools can visualize.
+
+In our benchmarks, V8 gameplay scripts run at approximately **70-85% of equivalent C++ code** for typical gameplay logic (movement, collision response, state machines). For the iteration speed gained, that's an excellent trade-off.
+
+## Conclusion
+
+Embedding V8 is a significant upfront investment — the build system alone takes days to get right. But the payoff is transformative: gameplay programmers can iterate in seconds instead of minutes, and the scripting API feels natural to anyone who knows JavaScript.
+
+The full implementation lives in the [Daemon Engine repository](https://github.com/example/daemon-engine), specifically in the `src/scripting/` directory.

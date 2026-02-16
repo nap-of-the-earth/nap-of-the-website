@@ -1,0 +1,62 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Section from "@components/astro/Section.astro";
+import { getCollection, render } from "astro:content";
+import { formatDateFull } from "@lib/utils";
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const posts = await getCollection("blog", ({ data }) => !data.draft);
+  return posts.map((post) => ({
+    params: { slug: post.id.replace(/\.mdx?$/, "") },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <Section class="pt-32 pb-24">
+    <div class="max-w-[700px] mx-auto">
+      <a
+        href="/blog"
+        class="inline-flex items-center gap-2 text-sm text-text-secondary hover:text-teal transition-colors no-underline mb-12"
+      >
+        <span>←</span> Back to Blog
+      </a>
+
+      <header class="mb-12">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="font-mono text-[0.65rem] text-text-tertiary">
+            {formatDateFull(post.data.pubDate)}
+          </span>
+          {post.data.tags.length > 0 && (
+            <>
+              <span class="text-text-tertiary">·</span>
+              <div class="flex gap-1.5">
+                {post.data.tags.map((tag: string) => (
+                  <span class="font-mono text-[0.6rem] text-teal">{tag}</span>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+        <h1 class="text-4xl font-bold tracking-tight mb-4">
+          {post.data.title}
+        </h1>
+        <p class="text-lg font-normal text-text-secondary">
+          {post.data.description}
+        </p>
+      </header>
+
+      <hr class="border-border mb-12" />
+
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+  </Section>
+</BaseLayout>

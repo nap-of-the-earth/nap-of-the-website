@@ -1,0 +1,24 @@
+---
+interface Props {
+  text: string;
+  dotColor?: string;
+  class?: string;
+}
+
+const { text, dotColor, class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    "inline-flex items-center gap-2 text-[0.75rem] font-medium text-teal bg-teal-glow border border-[rgba(45,212,191,0.2)] px-4 py-1.5 rounded-full",
+    className,
+  ]}
+>
+  {dotColor && (
+    <span
+      class="w-1.5 h-1.5 rounded-full animate-pulse-dot"
+      style={`background: ${dotColor};`}
+    ></span>
+  )}
+  {text}
+</div>

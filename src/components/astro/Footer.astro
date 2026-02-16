@@ -1,0 +1,44 @@
+---
+import { SOCIAL_LINKS } from "@lib/constants";
+---
+
+<footer class="relative z-1 border-t border-border">
+  <div class="max-w-[1100px] mx-auto px-8 py-10 flex flex-col md:flex-row justify-between items-center gap-6">
+    <div class="text-[0.85rem] font-semibold text-text-secondary">
+      nap of the earth © {new Date().getFullYear()}
+    </div>
+
+    <div class="flex items-center gap-8">
+      <a
+        href={SOCIAL_LINKS.github}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-sm text-text-tertiary hover:text-teal transition-colors no-underline"
+      >
+        GitHub
+      </a>
+      <a
+        href={SOCIAL_LINKS.linkedin}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-sm text-text-tertiary hover:text-teal transition-colors no-underline"
+      >
+        LinkedIn
+      </a>
+      <a
+        href={`mailto:${SOCIAL_LINKS.email}`}
+        class="text-sm text-text-tertiary hover:text-teal transition-colors no-underline"
+      >
+        Email
+      </a>
+      <a
+        href="/resume.pdf"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-sm text-text-tertiary hover:text-teal transition-colors no-underline"
+      >
+        Resume
+      </a>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,20 @@
+---
+interface Props {
+  overline?: string;
+  title: string;
+  class?: string;
+}
+
+const { overline, title, class: className } = Astro.props;
+---
+
+<div class:list={["flex justify-between items-end max-w-[1100px] mx-auto mb-12", className]}>
+  <h2 class="text-[2.5rem] font-bold tracking-tight leading-tight">
+    {title}
+  </h2>
+  {overline && (
+    <span class="font-mono text-[0.7rem] text-text-tertiary">
+      // {overline}
+    </span>
+  )}
+</div>

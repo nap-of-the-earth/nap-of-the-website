@@ -1,0 +1,45 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  category: string;
+  icon: string;
+  tags: string[];
+  slug: string;
+  featured?: boolean;
+}
+
+const { title, description, category, icon, tags, slug, featured } = Astro.props;
+---
+
+<a
+  href={`/projects/${slug}`}
+  class:list={[
+    "omnius-card block no-underline group",
+    featured && "md:col-span-2",
+  ]}
+>
+  {/* Category */}
+  <p class="font-mono text-[0.65rem] font-normal text-teal tracking-[0.08em] uppercase mb-3">
+    {category}
+  </p>
+
+  {/* Title */}
+  <h3 class="text-lg font-semibold tracking-tight text-text-primary mb-2 group-hover:text-teal transition-colors">
+    {title}
+  </h3>
+
+  {/* Description */}
+  <p class="text-sm font-normal leading-relaxed text-text-secondary mb-5">
+    {description}
+  </p>
+
+  {/* Tags */}
+  <div class="flex gap-2 flex-wrap">
+    {tags.map((tag) => (
+      <span class="font-mono text-[0.6rem] text-text-tertiary bg-[rgba(255,255,255,0.04)] border border-border px-2.5 py-1 rounded-md transition-colors group-hover:border-border-hover group-hover:text-text-secondary">
+        {tag}
+      </span>
+    ))}
+  </div>
+</a>

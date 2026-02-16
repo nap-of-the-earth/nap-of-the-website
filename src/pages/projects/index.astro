@@ -1,0 +1,46 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Section from "@components/astro/Section.astro";
+import ProjectFilter from "@components/react/ProjectFilter";
+import { getCollection } from "astro:content";
+import { PROJECT_CATEGORIES, PROJECT_CONTEXTS } from "@lib/constants";
+
+const allProjects = await getCollection("projects");
+const projects = allProjects
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((p) => ({
+    id: p.id.replace(/\.mdx?$/, ""),
+    title: p.data.title,
+    description: p.data.description,
+    category: p.data.category,
+    context: p.data.context,
+    icon: p.data.icon,
+    tags: p.data.tags,
+    featured: p.data.featured,
+  }));
+---
+
+<BaseLayout title="Projects" description="Selected work across architecture, software, game development, photography, and graphics.">
+  <Section class="pt-32 pb-8">
+    <div class="text-center mb-16">
+      <p class="font-mono text-[0.7rem] tracking-[0.15em] uppercase text-teal mb-4">
+        Portfolio
+      </p>
+      <h1 class="text-[2.5rem] font-bold tracking-tight">
+        Projects
+      </h1>
+      <p class="text-base font-normal text-text-secondary mt-4 max-w-[500px] mx-auto">
+        Our work across architecture, software, game development, web, and graphic design.
+      </p>
+    </div>
+  </Section>
+
+  <Section class="pb-24">
+    <ProjectFilter
+      client:load
+      projects={projects}
+      categories={[...PROJECT_CATEGORIES]}
+      contexts={[...PROJECT_CONTEXTS]}
+    />
+  </Section>
+</BaseLayout>

@@ -1,0 +1,45 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Section from "@components/astro/Section.astro";
+import BlogFilter from "@components/react/BlogFilter";
+import { getCollection } from "astro:content";
+import { BLOG_CATEGORIES } from "@lib/constants";
+
+const allPosts = await getCollection("blog");
+const posts = allPosts
+  .filter((p) => !p.data.draft)
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .map((p) => ({
+    id: p.id.replace(/\.mdx?$/, ""),
+    title: p.data.title,
+    description: p.data.description,
+    category: p.data.category,
+    pubDate: p.data.pubDate.toISOString(),
+    tags: p.data.tags,
+    draft: p.data.draft,
+  }));
+---
+
+<BaseLayout title="Blog" description="Writing about engineering, design, game development, and the spaces in between.">
+  <Section class="pt-32 pb-8">
+    <div class="text-center mb-16">
+      <p class="font-mono text-[0.7rem] tracking-[0.15em] uppercase text-teal mb-4">
+        Writing
+      </p>
+      <h1 class="text-[2.5rem] font-bold tracking-tight">
+        Blog
+      </h1>
+      <p class="text-base font-normal text-text-secondary mt-4 max-w-[500px] mx-auto">
+        Insights on engineering, design, game development, and the spaces in between.
+      </p>
+    </div>
+  </Section>
+
+  <Section class="pb-24">
+    <BlogFilter
+      client:load
+      posts={posts}
+      categories={[...BLOG_CATEGORIES]}
+    />
+  </Section>
+</BaseLayout>
