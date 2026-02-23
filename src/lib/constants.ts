@@ -30,6 +30,19 @@ export const PROJECT_CATEGORIES = [
 
 export type ProjectCategory = (typeof PROJECT_CATEGORIES)[number];
 
+// Hierarchical grouping — parent categories with children
+// When a parent is selected (collapsed), all children match.
+// When expanded, individual children can be selected.
+export const CATEGORY_HIERARCHY: {
+  label: string;
+  children?: string[];
+}[] = [
+  { label: "All" },
+  { label: "Architecture" },
+  { label: "Software", children: ["Software", "Game Dev", "Web"] },
+  { label: "Graphics" },
+];
+
 export const PROJECT_CONTEXTS = [
   "All",
   "Client Work",
