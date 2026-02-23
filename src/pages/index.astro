@@ -68,18 +68,19 @@ const recentPosts = allPosts
     </div>
   </Section>
 
-  <!-- Blog -->
-  <Section class="py-24" id="blog">
+  <!-- Archive -->
+  <Section class="py-24" id="archive">
     <div class="reveal">
-      <SectionHeader title="Blog" overline="writing" />
+      <SectionHeader title="Archive" overline="writing" />
     </div>
 
     <div class="reveal reveal-delay-1">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
         {recentPosts.map((post) => (
           <a
-            href={`/blog/${post.id.replace(/\.mdx?$/, "")}`}
+            href={`/archive/${post.id.replace(/\.mdx?$/, "")}`}
             class="omnius-card block no-underline group"
+            data-squircle="16"
           >
             <div class="flex items-center gap-2 mb-3">
               {post.data.category && (
@@ -102,7 +103,7 @@ const recentPosts = allPosts
 
             <div class="flex gap-1.5 flex-wrap">
               {post.data.tags.map((tag) => (
-                <span class="font-mono text-[0.6rem] text-text-tertiary bg-[rgba(255,255,255,0.04)] border border-border px-2 py-0.5 rounded-md group-hover:border-border-hover group-hover:text-text-secondary transition-colors">
+                <span class="font-mono text-[0.6rem] text-text-tertiary bg-[rgba(255,255,255,0.04)] px-2 py-0.5 group-hover:text-text-secondary transition-colors" style="filter: drop-shadow(0 0 0.5px var(--color-border))" data-squircle="6">
                   {tag}
                 </span>
               ))}
@@ -114,8 +115,9 @@ const recentPosts = allPosts
 
     <div class="reveal reveal-delay-2 text-center mt-12">
       <a
-        href="/blog"
+        href="/archive"
         class="btn-outline inline-flex"
+        data-squircle="10"
       >
         View All Posts
         <span class="text-xs">→</span>

@@ -8,7 +8,7 @@ export const SITE = {
 
 export const NAV_ITEMS = [
   { label: "Projects", href: "/projects", anchor: "#projects" },
-  { label: "Blog", href: "/blog", anchor: "#blog" },
+  { label: "Archive", href: "/archive", anchor: "#archive" },
   { label: "About", href: "/about", anchor: "#about" },
   { label: "Company Profile", href: "/company-profile.pdf", external: true },
 ] as const;

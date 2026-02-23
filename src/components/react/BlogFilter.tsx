@@ -56,7 +56,7 @@ export default function BlogFilter({ posts, categories }: Props) {
           {filtered.map((post) => (
             <motion.a
               key={post.id}
-              href={`/blog/${post.id}`}
+              href={`/archive/${post.id}`}
               layout
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
