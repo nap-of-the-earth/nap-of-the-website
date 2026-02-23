@@ -50,6 +50,7 @@ const recentPosts = allPosts
       <a
         href="/projects"
         class="btn-outline inline-flex"
+        data-squircle="10"
       >
         View All Projects
         <span class="text-xs">→</span>
@@ -115,7 +116,7 @@ const recentPosts = allPosts
   <!-- About Summary -->
   <Section class="py-24" id="about">
     <div class="reveal">
-      <div class="max-w-[800px] mx-auto bg-bg-card border border-border rounded-2xl p-16 text-center relative overflow-hidden">
+      <div class="max-w-[800px] mx-auto bg-bg-card p-16 text-center relative overflow-hidden" style="filter: drop-shadow(0 0 0.5px var(--color-border))" data-squircle="20">
         <!-- Rotating conic gradient -->
         <div class="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] opacity-30 pointer-events-none" style="background: conic-gradient(from 0deg, transparent, rgba(45,212,191,0.12), transparent, rgba(45,212,191,0.12), transparent); animation: about-rotate 15s linear infinite;"></div>
 
@@ -135,6 +136,7 @@ const recentPosts = allPosts
           <a
             href="/about"
             class="btn-outline inline-flex mt-8"
+            data-squircle="10"
           >
             More About Us
             <span class="text-xs">→</span>

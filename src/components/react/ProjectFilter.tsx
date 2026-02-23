@@ -104,7 +104,11 @@ export default function ProjectFilter({
                   {project.category}
                 </p>
                 {project.context && (
-                  <span className="font-mono text-[0.55rem] text-text-tertiary tracking-[0.08em] uppercase border border-border rounded px-1.5 py-0.5">
+                  <span
+                    className="font-mono text-[0.55rem] text-text-tertiary tracking-[0.08em] uppercase px-1.5 py-0.5"
+                    style={{ filter: "drop-shadow(0 0 0.5px var(--color-border))" }}
+                    data-squircle="6"
+                  >
                     {project.context}
                   </span>
                 )}
@@ -122,7 +126,9 @@ export default function ProjectFilter({
                 {project.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="font-mono text-[0.6rem] text-text-tertiary bg-[rgba(255,255,255,0.04)] border border-border px-2 py-0.5 rounded-md group-hover:border-border-hover group-hover:text-text-secondary transition-colors"
+                    className="font-mono text-[0.6rem] text-text-tertiary bg-[rgba(255,255,255,0.04)] px-2 py-0.5 group-hover:text-text-secondary transition-colors"
+                    style={{ filter: "drop-shadow(0 0 0.5px var(--color-border))" }}
+                    data-squircle="6"
                   >
                     {tag}
                   </span>

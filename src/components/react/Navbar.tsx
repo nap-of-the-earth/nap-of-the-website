@@ -65,11 +65,13 @@ export default function Navbar() {
     <>
       {/* Floating Pill Nav */}
       <nav
-        className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-6 py-2.5 flex items-center gap-8 rounded-full border transition-all duration-300 ${
+        className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-6 py-2.5 flex items-center gap-8 transition-all duration-300 ${
           scrolled
-            ? "bg-[rgba(6,8,15,0.85)] backdrop-blur-2xl backdrop-saturate-[180%] border-border shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
-            : "bg-[rgba(6,8,15,0.5)] backdrop-blur-xl border-[rgba(30,41,59,0.5)]"
+            ? "bg-[rgba(6,8,15,0.85)] backdrop-blur-2xl backdrop-saturate-[180%] shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
+            : "bg-[rgba(6,8,15,0.5)] backdrop-blur-xl"
         }`}
+        style={{ filter: scrolled ? "drop-shadow(0 0 0.5px rgba(30,41,59,0.8))" : "drop-shadow(0 0 0.5px rgba(30,41,59,0.5))" }}
+        data-squircle="20"
       >
         {/* Logo */}
         <a
@@ -89,7 +91,8 @@ export default function Navbar() {
                   ? { target: "_blank", rel: "noopener noreferrer" }
                   : {})}
                 onClick={(e) => handleNavClick(e, item)}
-                className="text-[0.78rem] text-text-secondary no-underline px-3 py-1.5 rounded-full hover:text-text-primary hover:bg-[rgba(255,255,255,0.05)] transition-colors"
+                className="text-[0.78rem] text-text-secondary no-underline px-3 py-1.5 hover:text-text-primary hover:bg-[rgba(255,255,255,0.05)] transition-colors"
+                data-squircle="8"
               >
                 {item.label}
               </a>
@@ -108,7 +111,8 @@ export default function Navbar() {
                 ?.scrollIntoView({ behavior: "smooth" });
             }
           }}
-          className="hidden md:inline-flex text-[0.78rem] font-medium text-bg bg-teal no-underline px-5 py-1.5 rounded-full hover:opacity-85 transition-opacity"
+          className="hidden md:inline-flex text-[0.78rem] font-medium text-bg bg-teal no-underline px-5 py-1.5 hover:opacity-85 transition-opacity"
+          data-squircle="8"
         >
           Contact
         </a>
@@ -168,7 +172,8 @@ export default function Navbar() {
                       handleNavClick(e, item, closeMobile);
                       closeMobile();
                     }}
-                    className="text-lg text-text-secondary no-underline px-6 py-3 rounded-lg hover:text-text-primary hover:bg-bg-card transition-colors block"
+                    className="text-lg text-text-secondary no-underline px-6 py-3 hover:text-text-primary hover:bg-bg-card transition-colors block"
+                    data-squircle="10"
                   >
                     {item.label}
                   </a>
@@ -194,7 +199,8 @@ export default function Navbar() {
                       closeMobile();
                     }
                   }}
-                  className="text-lg font-medium text-bg bg-teal no-underline px-8 py-3 rounded-full hover:opacity-85 transition-opacity block mt-4"
+                  className="text-lg font-medium text-bg bg-teal no-underline px-8 py-3 hover:opacity-85 transition-opacity block mt-4"
+                  data-squircle="10"
                 >
                   Contact
                 </a>

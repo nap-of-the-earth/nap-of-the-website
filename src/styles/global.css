@@ -208,6 +208,32 @@ body {
 }
 
 /* ═══════════════════════════════════════════
+   Superellipse (Squircle) — Apple-style
+   continuous corners. clip-path is computed
+   at runtime by src/scripts/squircle.ts
+   (Astro) or useSquircle hook (React).
+   Borders via filter: drop-shadow.
+   ═══════════════════════════════════════════ */
+
+[data-squircle] {
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* Drop-shadow border for squircle elements */
+.sq-border {
+  filter: drop-shadow(0 0 0.5px var(--color-border));
+}
+
+.sq-border-hover {
+  transition: filter 0.3s;
+}
+
+.sq-border-hover:hover {
+  filter: drop-shadow(0 0 0.5px var(--color-border-hover));
+}
+
+/* ═══════════════════════════════════════════
    Buttons
    ═══════════════════════════════════════════ */
 
@@ -219,7 +245,6 @@ body {
   background: linear-gradient(135deg, var(--color-teal), var(--color-cyan));
   border: none;
   padding: 0.8rem 2rem;
-  border-radius: 10px;
   cursor: pointer;
   position: relative;
   transition: transform 0.2s;
@@ -233,7 +258,6 @@ body {
   content: '';
   position: absolute;
   inset: -1px;
-  border-radius: 11px;
   background: linear-gradient(135deg, var(--color-teal), var(--color-cyan));
   filter: blur(12px);
   opacity: 0.4;
@@ -255,20 +279,20 @@ body {
   font-weight: 500;
   color: var(--color-text-primary);
   background: transparent;
-  border: 1px solid var(--color-border);
+  border: none;
   padding: 0.8rem 2rem;
-  border-radius: 10px;
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
+  transition: background 0.2s, filter 0.3s;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  filter: drop-shadow(0 0 0.5px var(--color-border));
 }
 
 .btn-outline:hover {
-  border-color: var(--color-border-hover);
   background: rgba(255, 255, 255, 0.03);
+  filter: drop-shadow(0 0 0.5px var(--color-border-hover));
 }
 
 /* ═══════════════════════════════════════════
@@ -277,19 +301,18 @@ body {
 
 .omnius-card {
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
-  border-radius: 16px;
   padding: 2.5rem;
   cursor: pointer;
-  transition: border-color 0.3s, transform 0.3s, background 0.3s;
+  transition: transform 0.3s, background 0.3s, filter 0.3s;
   position: relative;
   overflow: hidden;
+  filter: drop-shadow(0 0 0.5px var(--color-border));
 }
 
 .omnius-card:hover {
-  border-color: var(--color-border-hover);
   transform: translateY(-4px);
   background: var(--color-bg-card-hover);
+  filter: drop-shadow(0 0 0.5px var(--color-border-hover));
 }
 
 /* Gradient corner accent */
@@ -381,18 +404,16 @@ body {
   font-family: var(--font-mono);
   font-size: 0.85em;
   background: var(--color-bg-card);
-  border: 1px solid var(--color-border);
   padding: 0.15em 0.4em;
-  border-radius: 4px;
+  filter: drop-shadow(0 0 0.5px var(--color-border));
 }
 
 .prose pre {
   background: var(--color-bg-elevated);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
   padding: 1.2rem;
   overflow-x: auto;
   margin: 1.5rem 0;
+  filter: drop-shadow(0 0 0.5px var(--color-border));
 }
 
 .prose pre code {
@@ -418,8 +439,7 @@ body {
 }
 
 .prose img {
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
+  filter: drop-shadow(0 0 0.5px var(--color-border));
   margin: 1.5rem 0;
 }
 
