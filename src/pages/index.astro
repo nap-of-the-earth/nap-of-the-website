@@ -11,6 +11,16 @@ const featuredProjects = allProjects
   .sort((a, b) => a.data.order - b.data.order)
   .slice(0, 6);
 
+const heroProjects = allProjects
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 6)
+  .map((p) => ({
+    title: p.data.title,
+    icon: p.data.icon,
+    category: p.data.category,
+    slug: p.id.replace(/\.mdx?$/, ""),
+  }));
+
 const allPosts = await getCollection("blog");
 const recentPosts = allPosts
   .filter((p) => !p.data.draft)
@@ -21,7 +31,7 @@ const recentPosts = allPosts
 <BaseLayout title="Home">
   <!-- Hero -->
   <Section class="min-h-dvh flex flex-col items-center justify-center pt-32 pb-16">
-    <HeroAnimated client:load />
+    <HeroAnimated client:load projects={heroProjects} />
   </Section>
 
   <!-- Projects -->
