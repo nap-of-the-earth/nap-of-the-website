@@ -65,7 +65,7 @@ export default function Navbar() {
     <>
       {/* Floating Pill Nav */}
       <nav
-        className={`fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-6 py-2.5 flex items-center gap-8 transition-all duration-300 ${
+        className={`fixed bottom-4 left-1/2 -translate-x-1/2 z-[100] px-6 py-2.5 flex items-center gap-8 transition-all duration-300 ${
           scrolled
             ? "bg-[rgba(6,8,15,0.85)] backdrop-blur-2xl backdrop-saturate-[180%] shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
             : "bg-[rgba(6,8,15,0.5)] backdrop-blur-xl"
