@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { NAV_ITEMS } from "@lib/constants";
+import ThemeToggle from "./ThemeToggle";
 
 /**
  * If we're on the homepage and the nav item has an anchor,
@@ -121,12 +122,12 @@ export default function Navbar() {
   const closeMobile = useCallback(() => setMobileOpen(false), []);
 
   const bgClass = scrolled
-    ? "bg-[rgba(5,5,5,0.85)] backdrop-blur-2xl backdrop-saturate-[180%] shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
-    : "bg-[rgba(5,5,5,0.5)] backdrop-blur-xl";
+    ? "nav-pill-bg-scrolled backdrop-blur-2xl backdrop-saturate-[180%] shadow-[0_4px_24px_rgba(0,0,0,0.3)]"
+    : "nav-pill-bg backdrop-blur-xl";
 
   const filterStyle = scrolled
-    ? "drop-shadow(0 0 0.5px rgba(34,34,34,0.8))"
-    : "drop-shadow(0 0 0.5px rgba(34,34,34,0.5))";
+    ? "drop-shadow(0 0 0.5px var(--color-border))"
+    : "drop-shadow(0 0 0.5px var(--color-border))";
 
   return (
     <>
@@ -220,7 +221,7 @@ export default function Navbar() {
                           ? { target: "_blank", rel: "noopener noreferrer" }
                           : {})}
                         onClick={(e) => handleNavClick(e, item)}
-                        className="text-[0.72rem] text-text-secondary no-underline px-2 py-1 hover:text-text-primary hover:bg-[rgba(255,255,255,0.05)] transition-colors"
+                        className="text-[0.72rem] text-text-secondary no-underline px-2 py-1 hover:text-text-primary nav-hover transition-colors"
                         data-squircle="6"
                       >
                         {item.label}
@@ -260,7 +261,7 @@ export default function Navbar() {
                   onClick={() =>
                     window.dispatchEvent(new CustomEvent("hero-shuffle"))
                   }
-                  className="flex items-center gap-1 text-[0.72rem] font-medium text-text-secondary px-2 py-1 hover:text-text-primary hover:bg-[rgba(255,255,255,0.05)] transition-colors border-none bg-transparent cursor-pointer whitespace-nowrap"
+                  className="flex items-center gap-1 text-[0.72rem] font-medium text-text-secondary px-2 py-1 hover:text-text-primary nav-hover transition-colors border-none bg-transparent cursor-pointer whitespace-nowrap"
                   data-squircle="6"
                   aria-label="Shuffle floating objects"
                 >
@@ -268,13 +269,22 @@ export default function Navbar() {
                   Shuffle
                 </motion.button>
 
+                {/* Theme Toggle */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.3, delay: 0.22 }}
+                >
+                  <ThemeToggle />
+                </motion.div>
+
                 {/* Close Button */}
                 <motion.button
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.3, delay: 0.25 }}
+                  transition={{ duration: 0.3, delay: 0.28 }}
                   onClick={() => setExpanded(false)}
-                  className="flex items-center justify-center w-6 h-6 text-text-tertiary hover:text-text-primary hover:bg-[rgba(255,255,255,0.05)] transition-colors border-none bg-transparent cursor-pointer"
+                  className="flex items-center justify-center w-6 h-6 text-text-tertiary hover:text-text-primary nav-hover transition-colors border-none bg-transparent cursor-pointer"
                   data-squircle="4"
                   aria-label="Close navigation"
                 >
@@ -312,6 +322,9 @@ export default function Navbar() {
         >
           <ShuffleIcon />
         </button>
+
+        {/* Theme Toggle (mobile) */}
+        <ThemeToggle />
 
         {/* Hamburger */}
         <button
