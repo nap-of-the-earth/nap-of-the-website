@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Superellipse Explorer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #fafafa;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      color: #333;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 60px 24px;
+    }
+
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      margin-bottom: 8px;
+      color: #111;
+    }
+
+    .formula {
+      font-family: 'Times New Roman', serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      color: #555;
+      margin-bottom: 48px;
+    }
+
+    .formula sup { font-size: 0.75em; }
+
+    .gallery {
+      display: flex;
+      align-items: center;
+      gap: 48px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 64px;
+    }
+
+    .shape-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .shape-item:hover { transform: scale(1.05); }
+    .shape-item.active .shape-label { color: #e53e3e; font-weight: 600; }
+
+    .shape-canvas {
+      position: relative;
+    }
+
+    .shape-label {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: #999;
+      transition: color 0.2s;
+    }
+
+    /* Interactive section */
+    .interactive {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .interactive h2 {
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #999;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .slider-row label {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      color: #666;
+      min-width: 32px;
+    }
+
+    .slider-row input[type="range"] {
+      flex: 1;
+      accent-color: #e53e3e;
+      height: 2px;
+    }
+
+    .slider-value {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e53e3e;
+      min-width: 48px;
+      text-align: right;
+    }
+
+    .live-canvas-wrap {
+      position: relative;
+      width: 240px;
+      height: 240px;
+    }
+
+    .size-controls {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .size-controls label {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: #666;
+    }
+
+    .size-controls input[type="number"] {
+      width: 64px;
+      padding: 4px 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    .css-output {
+      width: 100%;
+      max-width: 480px;
+      background: #111;
+      color: #e8e8e8;
+      padding: 16px 20px;
+      border-radius: 8px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.75rem;
+      line-height: 1.6;
+      position: relative;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .css-output .keyword { color: #c792ea; }
+    .css-output .fn { color: #82aaff; }
+    .css-output .num { color: #f78c6c; }
+    .css-output .punct { color: #89ddff; }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #aaa;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .copy-btn:hover { background: rgba(255,255,255,0.2); color: #fff; }
+
+    .shape-names {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 8px;
+    }
+
+    .shape-name {
+      font-size: 0.7rem;
+      color: #bbb;
+      font-style: italic;
+    }
+
+    .shape-name strong { color: #e53e3e; font-style: normal; }
+  </style>
+</head>
+<body>
+
+  <h1>Superellipse</h1>
+  <div class="formula">|x|<sup>n</sup> + |y|<sup>n</sup> = 1</div>
+
+  <!-- Gallery of preset n values -->
+  <div class="gallery" id="gallery"></div>
+
+  <!-- Interactive explorer -->
+  <div class="interactive">
+    <h2>Interactive Explorer</h2>
+
+    <div class="slider-row">
+      <label>n</label>
+      <input type="range" id="nSlider" min="0.1" max="10" step="0.05" value="2.5">
+      <span class="slider-value" id="nValue">2.5</span>
+    </div>
+
+    <div class="size-controls">
+      <label>W <input type="number" id="widthInput" value="200" min="40" max="600" step="10"></label>
+      <label>H <input type="number" id="heightInput" value="200" min="40" max="600" step="10"></label>
+    </div>
+
+    <div class="live-canvas-wrap">
+      <canvas id="liveCanvas" width="240" height="240"></canvas>
+    </div>
+
+    <div class="shape-names" id="shapeName"></div>
+
+    <div class="css-output" id="cssOutput">
+      <button class="copy-btn" id="copyBtn">Copy</button>
+    </div>
+  </div>
+
+  <script>
+    // ── Superellipse math ──────────────────────────────────────
+    function superellipsePoints(n, a, b, steps = 360) {
+      const pts = [];
+      for (let i = 0; i <= steps; i++) {
+        const t = (i / steps) * 2 * Math.PI;
+        const cosT = Math.cos(t);
+        const sinT = Math.sin(t);
+        const x = Math.sign(cosT) * a * Math.pow(Math.abs(cosT), 2 / n);
+        const y = Math.sign(sinT) * b * Math.pow(Math.abs(sinT), 2 / n);
+        pts.push([x, y]);
+      }
+      return pts;
+    }
+
+    function drawSuperellipse(ctx, n, a, b, cx, cy, opts = {}) {
+      const { stroke = '#333', fill = 'none', lineWidth = 1.5 } = opts;
+      const pts = superellipsePoints(n, a, b);
+      ctx.beginPath();
+      pts.forEach(([x, y], i) => {
+        const px = cx + x;
+        const py = cy + y;
+        i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+      });
+      ctx.closePath();
+      if (fill !== 'none') { ctx.fillStyle = fill; ctx.fill(); }
+      ctx.strokeStyle = stroke;
+      ctx.lineWidth = lineWidth;
+      ctx.stroke();
+    }
+
+    function toClipPath(n, w, h, steps = 72) {
+      const a = w / 2, b = h / 2;
+      const pts = superellipsePoints(n, a, b, steps);
+      const percents = pts.map(([x, y]) => {
+        const px = ((x + a) / w * 100).toFixed(2);
+        const py = ((y + b) / h * 100).toFixed(2);
+        return `${px}% ${py}%`;
+      });
+      return `polygon(${percents.join(', ')})`;
+    }
+
+    // ── Gallery presets ────────────────────────────────────────
+    const PRESETS = [
+      { n: 0.5, label: 'n = 0.5', name: 'Astroid' },
+      { n: 1,   label: 'n = 1',   name: 'Diamond' },
+      { n: 1.5, label: 'n = 1.5', name: '' },
+      { n: 2,   label: 'n = 2',   name: 'Ellipse (Circle)' },
+      { n: 2.5, label: 'n = 2.5', name: 'Squircle' },
+      { n: 3,   label: 'n = 3',   name: '' },
+      { n: 4,   label: 'n = 4',   name: '' },
+      { n: 5,   label: 'n = 5',   name: '' },
+    ];
+
+    const gallery = document.getElementById('gallery');
+
+    function redrawGallery(activeN) {
+      document.querySelectorAll('.shape-item').forEach(el => {
+        const n = parseFloat(el.dataset.n);
+        const isActive = Math.abs(n - activeN) < 0.05;
+        el.classList.toggle('active', isActive);
+
+        const canvas = el.querySelector('canvas');
+        const ctx = canvas.getContext('2d');
+        const size = n <= 1 ? 64 : n <= 2 ? 80 : 96;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawSuperellipse(ctx, n, size / 2, size / 2, canvas.width / 2, canvas.height / 2, {
+          stroke: isActive ? '#e53e3e' : '#999',
+          lineWidth: isActive ? 2 : 1.2,
+        });
+      });
+    }
+
+    PRESETS.forEach((preset) => {
+      const item = document.createElement('div');
+      item.className = 'shape-item' + (preset.n === 2.5 ? ' active' : '');
+      item.dataset.n = preset.n;
+
+      const size = preset.n <= 1 ? 64 : preset.n <= 2 ? 80 : 96;
+      const canvasSize = size + 16;
+
+      const wrap = document.createElement('div');
+      wrap.className = 'shape-canvas';
+
+      const canvas = document.createElement('canvas');
+      canvas.width = canvasSize;
+      canvas.height = canvasSize;
+      const ctx = canvas.getContext('2d');
+
+      const isHighlight = preset.n === 2.5;
+      drawSuperellipse(ctx, preset.n, size / 2, size / 2, canvasSize / 2, canvasSize / 2, {
+        stroke: isHighlight ? '#e53e3e' : '#999',
+        lineWidth: isHighlight ? 2 : 1.2,
+      });
+
+      wrap.appendChild(canvas);
+
+      const label = document.createElement('div');
+      label.className = 'shape-label';
+      label.textContent = preset.label;
+
+      item.appendChild(wrap);
+      item.appendChild(label);
+
+      item.addEventListener('click', () => {
+        document.getElementById('nSlider').value = preset.n;
+        updateLive();
+      });
+
+      gallery.appendChild(item);
+    });
+
+    // ── Live interactive ───────────────────────────────────────
+    const nSlider = document.getElementById('nSlider');
+    const nValueEl = document.getElementById('nValue');
+    const liveCanvas = document.getElementById('liveCanvas');
+    const liveCtx = liveCanvas.getContext('2d');
+    const cssOutput = document.getElementById('cssOutput');
+    const shapeNameEl = document.getElementById('shapeName');
+    const widthInput = document.getElementById('widthInput');
+    const heightInput = document.getElementById('heightInput');
+    const copyBtn = document.getElementById('copyBtn');
+
+    function getShapeName(n) {
+      if (n < 0.3) return 'Extreme concave';
+      if (Math.abs(n - 0.5) < 0.05) return 'Astroid';
+      if (n < 1) return 'Concave superellipse';
+      if (Math.abs(n - 1) < 0.05) return 'Diamond (Rhombus)';
+      if (n < 2) return 'Rounded diamond';
+      if (Math.abs(n - 2) < 0.05) return 'Ellipse / Circle';
+      if (n < 3) return 'Squircle';
+      if (n < 5) return 'Rounded rectangle';
+      return 'Near-rectangle';
+    }
+
+    function updateLive() {
+      const n = parseFloat(nSlider.value);
+      const w = parseInt(widthInput.value) || 200;
+      const h = parseInt(heightInput.value) || 200;
+      nValueEl.textContent = n.toFixed(2);
+
+      // Draw on canvas
+      const cw = liveCanvas.width;
+      const ch = liveCanvas.height;
+      liveCtx.clearRect(0, 0, cw, ch);
+
+      // Draw reference circle (n=2) faintly
+      drawSuperellipse(liveCtx, 2, 90, 90, cw / 2, ch / 2, {
+        stroke: 'rgba(0,0,0,0.06)',
+        lineWidth: 1,
+      });
+
+      // Draw current shape
+      drawSuperellipse(liveCtx, n, 90, 90, cw / 2, ch / 2, {
+        stroke: '#e53e3e',
+        lineWidth: 2,
+      });
+
+      // Shape name
+      const name = getShapeName(n);
+      shapeNameEl.innerHTML = `<span class="shape-name"><strong>n = ${n.toFixed(2)}</strong> — ${name}</span>`;
+
+      // CSS output
+      const clip = toClipPath(n, w, h);
+      const raw = `clip-path: ${clip};`;
+      // Syntax-highlighted version
+      const highlighted = `<span class="keyword">clip-path</span><span class="punct">:</span> <span class="fn">polygon</span><span class="punct">(</span>...<span class="punct">)</span><span class="punct">;</span>\n\n<span style="color:#666">/* Full value (${raw.length} chars): */</span>\n${raw}`;
+      cssOutput.innerHTML = highlighted + `<button class="copy-btn" id="copyBtn">Copy</button>`;
+
+      // Re-bind copy
+      document.getElementById('copyBtn').addEventListener('click', () => {
+        navigator.clipboard.writeText(raw).then(() => {
+          const btn = document.getElementById('copyBtn');
+          btn.textContent = 'Copied!';
+          setTimeout(() => btn.textContent = 'Copy', 1500);
+        });
+      });
+
+      // Update gallery active state + redraw strokes
+      redrawGallery(n);
+    }
+
+    nSlider.addEventListener('input', updateLive);
+    widthInput.addEventListener('input', updateLive);
+    heightInput.addEventListener('input', updateLive);
+
+    updateLive();
+  </script>
+</body>
+</html>
