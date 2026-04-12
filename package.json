@@ -23,7 +23,8 @@
     "motion": "^12.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwind-merge": "^3.0.0"
+    "tailwind-merge": "^3.0.0",
+    "ueblueprint": "^2.0.0"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
