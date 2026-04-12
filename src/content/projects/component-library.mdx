@@ -1,0 +1,377 @@
+---
+title: "Component Library"
+description: "A living reference of all reusable MDX components available for project and blog pages, with real asset examples and copy-paste snippets."
+category: "Software"
+tags: ["MDX", "Astro", "React", "Components"]
+date: 2026-04-12
+featured: false
+order: 99
+icon: "◇"
+context: "Internal"
+---
+
+{/* Copy-paste any snippet below into your .mdx content. */}
+
+import YouTubeEmbed from "@components/astro/YouTubeEmbed.astro";
+import ItchWidget from "@components/astro/ItchWidget.astro";
+import SteamWidget from "@components/astro/SteamWidget.astro";
+import ImageGallery from "@components/react/ImageGallery";
+import TextImage from "@components/react/TextImage";
+import HoverHint from "@components/react/HoverHint";
+import MermaidDiagram from "@components/react/MermaidDiagram";
+import ScrollReveal from "@components/react/ScrollReveal";
+import BlueprintEmbed from "@components/react/BlueprintEmbed";
+import GifGallery from "@components/react/GifGallery";
+import YouTubeGallery from "@components/react/YouTubeGallery";
+
+# This is an example for Heading H1
+## This is an example for Heading H2
+### This is an example for Heading H3
+
+This is an example for **bold text**
+
+This is an example for *italicized text*
+
+> This is an example for blockquote
+
+1. First item
+2. Second item
+3. Third item
+- First item
+- Second item
+- Third item
+
+This is an example for `code`
+
+---
+
+[This is an example for link](https://www.example.com)
+
+<figure style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+    <img src="/favicon.png" alt="Favicon" width="64"/>
+    <figcaption>This is an example for <strong><em><u>centered</u></em></strong> image and text</figcaption>
+</figure>
+
+<figure style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end'}}>
+    <img src="/favicon.png" alt="Favicon" width="64"/>
+    <figcaption>This is an example for <strong><em><u>right-aligned</u></em></strong> image and text</figcaption>
+</figure>
+
+<figure style={{display: 'flex', flexDirection: 'column', alignItems: 'flex-start'}}>
+    <img src="/favicon.png" alt="Favicon" width="64"/>
+    <figcaption>This is an example for <strong><em><u>left-aligned</u></em></strong> image and text</figcaption>
+</figure>
+
+| Syntax | Description |
+| ----------- | ----------- |
+| Header | Title |
+| Paragraph | Text |
+
+```cpp
+// This is an example for code
+#include <iostream>
+
+int main() {
+    std::cout << "Hello World!" << std::endl;
+    return 0;
+}
+```
+
+This is an example for footnote. [^1]
+
+[^1]: This is an example for footnote.
+
+{/* ======================================================== */}
+{/* 1. ImageGallery                                          */}
+{/*    Clickable image grid with fullscreen lightbox,         */}
+{/*    keyboard nav, and swipe support.                       */}
+{/*                                                           */}
+{/*    Props:                                                 */}
+{/*      images    — { src, alt }[]        (required)         */}
+{/*      columns   — 2 | 3                 (default: 3)       */}
+{/* ======================================================== */}
+
+{/* Example: 3-column grid (default) */}
+## ImageGallery (3-column grid)
+
+<ImageGallery
+  client:visible
+  images={[
+    { src: "/images/projects/higanbana/higanbana-01.webp", alt: "Higanbana 01" },
+    { src: "/images/projects/higanbana/higanbana-02.webp", alt: "Higanbana 02" },
+    { src: "/images/projects/higanbana/higanbana-03.webp", alt: "Higanbana 03" },
+    { src: "/images/projects/higanbana/higanbana-04.webp", alt: "Higanbana 04" },
+    { src: "/images/projects/higanbana/higanbana-05.webp", alt: "Higanbana 05" },
+    { src: "/images/projects/higanbana/higanbana-06.webp", alt: "Higanbana 06" },
+  ]}
+/>
+
+{/* Example: 2-column grid */}
+## ImageGallery (2-column grid)
+
+<ImageGallery
+  client:visible
+  columns={2}
+  images={[
+    { src: "/images/projects/daemon-starship/attract-mode-ui.png", alt: "Daemon Starship UI" },
+    { src: "/images/projects/daemon-starship/attract-mode-scoreboard.png", alt: "Daemon Starship Scoreboard" },
+    { src: "/images/projects/daemon-starship/game-mode-bullet.png", alt: "Daemon Starship Bullet" },
+    { src: "/images/projects/daemon-starship/game-mode.png", alt: "Daemon Starship Gameplay" },
+  ]}
+/>
+
+{/* ======================================================== */}
+{/* 2. TextImage                                              */}
+{/*    Side-by-side text + image layout with configurable     */}
+{/*    ratio. Stacks on mobile, lightbox on click.            */}
+{/*                                                           */}
+{/*    Props:                                                 */}
+{/*      src       — string                (required)         */}
+{/*      alt       — string                (required)         */}
+{/*      caption   — string (HTML)         (optional)         */}
+{/*      children  — ReactNode             (required)         */}
+{/*      textSpan  — number (out of 12)    (default: 6)       */}
+{/*      imageLeft — boolean               (default: false)   */}
+{/*      className — string                (optional)         */}
+{/* ======================================================== */}
+
+## TextImage
+
+{/* Example: text-heavy (8/12 text, 4/12 image on right) */}
+<TextImage client:visible src="/images/projects/higanbana/higanbana-01.webp" alt="Higanbana" caption="This is an example for <strong><em><u>TextImage</u></em></strong>" textSpan={8}>
+  This is an example of a text-heavy layout. The `textSpan` prop controls
+  how much horizontal space the text occupies out of a 12-column grid.
+  A value of 8 means the image gets the remaining 4 columns.
+</TextImage>
+
+## TextImage (image left)
+
+{/* Example: image on the left */}
+<TextImage client:visible src="/images/projects/daemon-starship/attract-mode-ui.png" alt="Daemon Starship" caption="This is an example for <strong><em><u>TextImage</u></em></strong>" textSpan={5} imageLeft>
+  Setting `imageLeft` flips the layout so the image appears on the left.
+  Useful for alternating layouts in long-form content.
+</TextImage>
+
+{/* ======================================================== */}
+{/* 3. HoverHint                                              */}
+{/*    Inline text with rich hover tooltip (text, image,      */}
+{/*    or both). Auto-positions, mobile tap support.          */}
+{/*                                                           */}
+{/*    Props:                                                 */}
+{/*      children  — ReactNode             (required)         */}
+{/*      hint      — string                (optional)         */}
+{/*      image     — string                (optional)         */}
+{/*      imageAlt  — string                (optional)         */}
+{/*      bold      — boolean               (default: false)   */}
+{/*      italic    — boolean               (default: false)   */}
+{/*      underline — boolean               (default: false)   */}
+{/*      bg        — boolean               (default: false)   */}
+{/*      className — string                (optional)         */}
+{/* ======================================================== */}
+
+## HoverHint
+
+{/* Example: text-only hint */}
+Hover over <HoverHint client:visible bold underline hint="This is a text-only tooltip that appears on hover.">this text</HoverHint> to see a hint.
+
+{/* Example: image + text hint */}
+This shows an <HoverHint client:visible bold italic underline bg hint="This is a tooltip with an image and background highlight." image="/images/projects/higanbana/cover-poster.webp" imageAlt="Higanbana cover">image tooltip</HoverHint> with background highlight.
+
+{/* ======================================================== */}
+{/* 4. MermaidDiagram                                         */}
+{/*    Renders Mermaid diagrams with theme-aware styling,     */}
+{/*    pan/zoom, and fullscreen support.                      */}
+{/*                                                           */}
+{/*    Props:                                                 */}
+{/*      chart     — string (Mermaid syntax)  (required)      */}
+{/*      caption   — string                   (optional)      */}
+{/*      className — string                   (optional)      */}
+{/* ======================================================== */}
+
+## MermaidDiagram
+
+<MermaidDiagram client:only="react" caption="Example architecture diagram" chart={`graph LR
+  A[Input] --> B{Process}
+  B --> C[Output A]
+  B --> D[Output B]
+`} />
+
+<MermaidDiagram client:only="react" caption="Example timeline" chart={`gantt
+  title Sample Timeline
+  dateFormat YYYY-MM-DD
+  section Phase 1
+  Research     :a1, 2026-01-01, 14d
+  Prototype    :a2, after a1, 10d
+  section Phase 2
+  Development  :b1, after a2, 30d
+  Testing      :b2, after b1, 7d
+`} />
+
+{/* ======================================================== */}
+{/* 5. ScrollReveal                                           */}
+{/*    Fade-in + slide-up animation on viewport entry.        */}
+{/*                                                           */}
+{/*    Props:                                                 */}
+{/*      children  — ReactNode             (required)         */}
+{/*      delay     — number (seconds)      (default: 0)       */}
+{/*      className — string                (optional)         */}
+{/* ======================================================== */}
+
+## ScrollReveal
+
+<ScrollReveal client:visible>
+  This content fades in when scrolled into view.
+</ScrollReveal>
+
+<ScrollReveal client:visible delay={0.3}>
+  This one has a 0.3s delay for staggered reveals.
+</ScrollReveal>
+
+{/* ======================================================== */}
+{/* 6. GifGallery                                             */}
+{/*    Carousel for GIF/video items with left/right nav,      */}
+{/*    keyboard controls, and fullscreen lightbox.             */}
+{/*                                                           */}
+{/*    Props:                                                 */}
+{/*      items — { src, alt, caption? }[]  (required)         */}
+{/* ======================================================== */}
+
+## GifGallery
+
+<GifGallery
+  client:visible
+  items={[
+    { src: "/images/projects/daemon-starship/game-mode-box-spawn-enemy.gif", alt: "Enemy spawn", caption: "Box spawn enemy system" },
+    { src: "/images/projects/daemon-starship/game-mode-debris.gif", alt: "Debris effect", caption: "Debris particle effect" },
+  ]}
+/>
+
+{/* ======================================================== */}
+{/* 7. YouTubeEmbed (Astro)                                   */}
+{/*    Responsive 16:9 YouTube embed with optional caption.   */}
+{/*                                                           */}
+{/*    Props:                                                 */}
+{/*      id      — string (YouTube video ID)  (required)      */}
+{/*      title   — string                     (optional)      */}
+{/* ======================================================== */}
+
+## YouTubeEmbed
+
+<YouTubeEmbed id="ScMzIvxBSi4" title="Example video" />
+
+{/* ======================================================== */}
+{/* 8. YouTubeGallery                                         */}
+{/*    Carousel for multiple YouTube videos with nav           */}
+{/*    and keyboard controls.                                  */}
+{/*                                                           */}
+{/*    Props:                                                 */}
+{/*      items — { id, title, caption? }[] (required)         */}
+{/* ======================================================== */}
+
+## YouTubeGallery
+
+<YouTubeGallery
+  client:visible
+  items={[
+    { id: "ScMzIvxBSi4", title: "Video 1", caption: "First video caption" },
+    { id: "dQw4w9WgXcQ", title: "Video 2", caption: "Second video caption" },
+  ]}
+/>
+
+{/* ======================================================== */}
+{/* 9. ItchWidget (Astro)                                     */}
+{/*    Embeds itch.io game widget with theme sync.            */}
+{/*                                                           */}
+{/*    Props:                                                 */}
+{/*      gameId — string | number          (required)         */}
+{/* ======================================================== */}
+
+## ItchWidget
+
+<ItchWidget gameId="4384812" />
+
+{/* ======================================================== */}
+{/* 10. SteamWidget (Astro)                                   */}
+{/*     Embeds Steam store widget.                            */}
+{/*                                                           */}
+{/*     Props:                                                */}
+{/*       appId — string | number          (required)         */}
+{/* ======================================================== */}
+
+## SteamWidget
+
+<SteamWidget appId="730" />
+
+{/* ======================================================== */}
+{/* 11. BlueprintEmbed                                        */}
+{/*     Unreal Engine blueprint viewer with fullscreen,       */}
+{/*     pan/zoom, and theme switching.                        */}
+{/*                                                           */}
+{/*     Props:                                                */}
+{/*       blueprintCode — string           (required)         */}
+{/*       title         — string           (default: "Blueprint Graph") */}
+{/*       caption       — string           (optional)         */}
+{/*       height        — string           (default: "600px") */}
+{/*       theme         — "light" | "dark" (default: "dark")  */}
+{/*       zoom          — number           (default: 1)       */}
+{/* ======================================================== */}
+
+## BlueprintEmbed
+
+<BlueprintEmbed
+  client:visible
+  blueprintCode="Paste UE blueprint XML here"
+  title="Example Blueprint"
+  caption="Replace with real blueprint code"
+  height="400px"
+/>
+
+{/* ======================================================== */}
+{/* AVAILABLE IMAGE ASSETS (quick reference)                  */}
+{/* ======================================================== */}
+
+{/*
+Every project has cover assets:
+  /images/projects/<slug>/cover.gif
+  /images/projects/<slug>/cover.mp4
+  /images/projects/<slug>/cover.webm
+  /images/projects/<slug>/cover-poster.webp
+
+Projects with extra assets:
+
+  daemon-libra/
+    attract-mode-ui.png
+    game-mode-heat-map.png
+    game-mode-pcg-map.png
+    game-mode-player-tank.png
+
+  daemon-starship/
+    attract-mode-scoreboard.png
+    attract-mode-ui.png
+    game-mode-box-spawn-enemy.gif/.mp4/.webm/-poster.webp
+    game-mode-bullet.png
+    game-mode-debris.gif/.mp4/.webm/.png/-poster.webp
+    game-mode.png
+
+  higanbana/
+    higanbana-01.webp through higanbana-15.webp
+    higanbana-combine.webp
+
+  tgp-1/
+    core-loop.png
+    cosmo.png
+    gameplay-color-change.png
+    gameplay-door.png
+    gameplay-movement.png
+    gameplay-painting.png
+    gameplay-switch.png
+    hud-mockup.png / hud-mockup-full.png
+    level-finish.png
+    painting-flowchart.png
+    storyboard-01.jpg through storyboard-04.jpg
+    title-scene.png
+    tutorial-overlay.png
+
+  trashure/
+    trashure-01.webp through trashure-08.webp
+*/}

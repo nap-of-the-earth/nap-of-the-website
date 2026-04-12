@@ -1,0 +1,46 @@
+---
+interface Props {
+  /** The numeric game ID from itch.io (found in the embed widget URL) */
+  gameId: string | number;
+}
+
+const { gameId } = Astro.props;
+---
+
+<iframe
+  data-itch-widget
+  data-game-id={gameId}
+  src={`https://itch.io/embed/${gameId}`}
+  frameborder="0"
+  width="100%"
+  height="167"
+  style="border-radius: 8px; border: 1px solid var(--color-border); margin: 2rem 0; display: block; overflow: hidden;"
+  loading="lazy"
+  scrolling="no"
+></iframe>
+
+<script>
+  function syncItchTheme() {
+    const isDark = document.documentElement.getAttribute("data-theme") === "dark";
+    document.querySelectorAll<HTMLIFrameElement>("iframe[data-itch-widget]").forEach((iframe) => {
+      const gameId = iframe.dataset.gameId;
+      const url = new URL(`https://itch.io/embed/${gameId}`);
+      if (isDark) url.searchParams.set("dark", "true");
+      if (iframe.src !== url.toString()) iframe.src = url.toString();
+    });
+  }
+
+  // Sync on load
+  syncItchTheme();
+
+  // Watch for theme changes via data-theme attribute
+  const observer = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      if (m.attributeName === "data-theme") {
+        syncItchTheme();
+        break;
+      }
+    }
+  });
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+</script>
